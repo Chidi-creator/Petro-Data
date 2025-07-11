@@ -138,7 +138,7 @@ JWT tokens are passed in requests via:
 The full API documentation is auto-generated and available at:
 
 ```
-http://localhost:4000/docs
+https://petro-data.onrender.com/docs
 ```
 
 It includes:
