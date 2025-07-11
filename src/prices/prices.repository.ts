@@ -7,6 +7,8 @@ import { AbstractRepository } from 'src/common/schemas/abstract.repository';
 import { Price } from 'src/common/schemas/prices.schema';
 import { getWeekDates } from 'src/utils/helper.utils';
 
+
+
 export class PricesRepository extends AbstractRepository<Price> {
   constructor(@InjectModel(Price.name) priceModel: Model<Price>) {
     super(priceModel);
@@ -62,8 +64,8 @@ export class PricesRepository extends AbstractRepository<Price> {
     return result;
   }
 
-  //corect
-  async getProductHistory(
+
+  async getPriceHistory(
     product: ProductType,
     period: Date,
     duration?: number,
@@ -241,7 +243,7 @@ export class PricesRepository extends AbstractRepository<Price> {
     return results;
   }
 
-  async getWeeklyProductHistory(
+  async getWeeklyPriceHistory(
     product: ProductType,
     state: string,
     week: number,

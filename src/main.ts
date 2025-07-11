@@ -4,8 +4,30 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from './common/filters/globalException.filter';
 import { GlobalResponseInterceptor } from './common/interceptors/global.interceptor';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
+const config = new DocumentBuilder()
+  .setTitle('Petro Data')
+  .setDescription('Weekly price report and analytics')
+  .setVersion('1.0')
+  .addBearerAuth(
+    {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      name: 'Authorization',
+      in: 'header',
+    },
+    'access-token',
+  )
+  .addTag('Prices')
+  .build();
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
   const configService = app.get(ConfigService);
   app.useGlobalPipes(
     new ValidationPipe({
@@ -24,6 +46,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+
   app.useGlobalFilters(new GlobalExceptionFilter(httpAdapter));
 
   app.useGlobalInterceptors(new GlobalResponseInterceptor(reflector));

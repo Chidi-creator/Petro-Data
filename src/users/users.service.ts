@@ -45,10 +45,10 @@ export class UsersService {
   }
 
 
-  async getAllUsers(): Promise<User[]> {
+  async getAllUsers({}, options): Promise<User[]> {
 
     try {
-      const users = await this.userRepository.findAll();
+      const users = await this.userRepository.findAll({}, options);
       return users.map(user => {
         user.password = ''; // Remove password from the response
         return user;

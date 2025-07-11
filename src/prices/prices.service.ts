@@ -78,14 +78,14 @@ export class PricesService {
     }
   }
 
-  async getProductHistory(
+  async getPriceHistory(
     product: ProductType,
     period: Date,
     duration?: number,
     state?: string,
   ) {
     try {
-      const document = await this.priceRepository.getProductHistory(
+      const document = await this.priceRepository.getPriceHistory(
         product,
         period,
         duration,
@@ -132,7 +132,7 @@ export class PricesService {
     }
   }
 
-  async getWeeklyProductHistory(
+  async getWeeklyPriceHistory(
     product: ProductType,
     state: string,
     week: number,
@@ -147,7 +147,7 @@ export class PricesService {
     percentageChange: number;
   }> {
     try {
-      const document = await this.priceRepository.getWeeklyProductHistory(
+      const document = await this.priceRepository.getWeeklyPriceHistory(
         product,
         state,
         week,

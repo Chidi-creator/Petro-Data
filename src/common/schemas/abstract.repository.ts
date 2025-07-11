@@ -2,6 +2,12 @@ import { NotFoundException } from '@nestjs/common';
 import { Document, FilterQuery, Model } from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
 import { PaginationOptions } from '../config/constants';
+import {
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiBody,
+} from '@nestjs/swagger';
 
 export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   constructor(protected readonly model: Model<TDocument>) {}
