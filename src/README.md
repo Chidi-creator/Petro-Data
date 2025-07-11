@@ -171,6 +171,39 @@ Here's a sample of a weekly report payload:
   "percentageChange": 0.0049
 }
 ```
+---
+
+## 🔍 Search Prices by State
+
+### `GET /prices/search`
+
+Returns paginated fuel price records filtered by a query string (typically a state name).
+
+**Query Parameters**
+
+| Name  | Type   | Required | Description                                  | Example |
+|-------|--------|----------|----------------------------------------------|---------|
+| query | string | ✅        | Name of the state to search for              | `Kano`  |
+| page  | number | ✅        | Page number for pagination (starts from 1)   | `1`     |
+
+**Authentication Required**  
+- ✅ Yes (Bearer token)
+- ✅ Role: `USER` or `ADMIN`
+
+**Sample Response**
+```json
+[
+  {
+    "state": "Kano",
+    "region": "North West",
+    "period": "2024-12-01T00:00:00.000Z",
+    "pms": 1280,
+    "ago": 1375,
+    "dpk": 1450,
+    "lpg": 1305
+  }
+]
+
 
 ```http
 Authorization: Bearer <your-token>
