@@ -1,6 +1,8 @@
+import { HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { ProductType } from 'src/common/config/constants';
+import { CustomHttpException } from 'src/common/filters/customException.filter';
 import { AbstractRepository } from 'src/common/schemas/abstract.repository';
 import { Price } from 'src/common/schemas/prices.schema';
 import { getWeekDates } from 'src/utils/helper.utils';
@@ -79,6 +81,13 @@ export class PricesRepository extends AbstractRepository<Price> {
 
     if (state) {
       filter.state = { $regex: new RegExp(`^${state.trim()}$`, 'i') };
+    }
+    const allowedProducts: ProductType[] = ['pms', 'ago', 'dpk', 'lpg'];
+    if (!allowedProducts.includes(product)) {
+      throw new CustomHttpException(
+        `Invalid product "${product}". Must be one of ${allowedProducts.join(', ')}`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const result = await this.model.aggregate([
@@ -246,10 +255,11 @@ export class PricesRepository extends AbstractRepository<Price> {
     change: number;
     percentageChange: number;
   }> {
-    const allowedProducts: ProductType[] = ['pmg', 'ago', 'dpk', 'lpg'];
+    const allowedProducts: ProductType[] = ['pms', 'ago', 'dpk', 'lpg'];
     if (!allowedProducts.includes(product)) {
-      throw new Error(
+      throw new CustomHttpException(
         `Invalid product "${product}". Must be one of ${allowedProducts.join(', ')}`,
+        HttpStatus.BAD_REQUEST,
       );
     }
     const weekDates = getWeekDates(week, year);
@@ -281,8 +291,9 @@ export class PricesRepository extends AbstractRepository<Price> {
     }));
 
     const latest = history[0]?.price ?? 0;
-    const previous = history[6]?.price ?? 0;
+    const previous = history[1]?.price ?? 0;
 
+    
     const change = +(latest - previous) / 100;
     const percentageChange =
       previous === 0 ? 0 : +((latest - previous) / previous / 100).toFixed(4);

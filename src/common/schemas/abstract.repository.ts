@@ -1,22 +1,31 @@
 import { NotFoundException } from '@nestjs/common';
 import { Document, FilterQuery, Model } from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
+import { PaginationOptions } from '../config/constants';
 
 export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   constructor(protected readonly model: Model<TDocument>) {}
 
   async create(
-    Document:Omit<TDocument, '_id'> | Partial<TDocument>): Promise<TDocument> {
+    Document: Omit<TDocument, '_id'> | Partial<TDocument>,
+  ): Promise<TDocument> {
     const createdDocument = await this.model.create(Document);
     return createdDocument;
   }
 
-async findAll(
-  filterQuery: FilterQuery<TDocument> = {})
-  : Promise<TDocument[]> {
-  return this.model.find(filterQuery).exec();
-}
+  async findAll(
+    filterQuery: FilterQuery<TDocument> = {},
+    options?: PaginationOptions,
+  ): Promise<TDocument[]> {
+    let query = this.model.find(filterQuery);
 
+    if (options) {
+      query = query.skip(options.skip).limit(options.limit);
+    }
+    const documents = await query.exec();
+
+    return documents;
+  }
 
   async findOne(
     filterQuery: FilterQuery<TDocument>,
@@ -46,13 +55,14 @@ async findAll(
   }
 
   async updateById(id: string, update: Partial<TDocument>): Promise<TDocument> {
-    const updatedDocument = await this.model.findByIdAndUpdate(id, update, {new: true});
+    const updatedDocument = await this.model.findByIdAndUpdate(id, update, {
+      new: true,
+    });
 
     if (!updatedDocument) {
       throw new NotFoundException(`Document not found with id: ${id}`);
     }
 
     return updatedDocument;
-}
-
+  }
 }
