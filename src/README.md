@@ -36,5 +36,145 @@ Routes requiring protection use:
 
 JWT tokens are passed in requests via:
 
+# API Documentation
+
+## Available Endpoints
+
+### User Management
+
+#### POST /auth/register
+
+- **Description:** Registers a new user
+- **Request Body:**
+  - `firstName` (string) — First name of the user
+  - `lastName` (string) — Last name of the user
+  - `email` (string) — Email address (must be unique)
+  - `password` (string) — User password
+  - `phoneNumber` (string) — Nigerian phone number
+- **Response:** `201 Created` with registered user data
+- **Public Access**
+
+#### POST /auth/login
+
+- **Description:** Authenticates a user and returns a JWT token
+- **Request Body:**
+  - `email` (string)
+  - `password` (string)
+- **Response:** `{ user: UserObject, token: JWT }`
+- **Public Access**
+
+#### GET /users
+
+- **Description:** Returns a paginated list of users
+- **Auth Required:** ✅ `ADMIN`
+- **Query Param:** `page` (number)
+- **Response:** List of user profiles (with password excluded)
+
+### Price Records
+
+#### GET /prices
+
+- **Description:** Fetch paginated fuel price records
+- **Query Params:**
+  - `state` (optional)
+  - `region` (optional)
+  - `page` (required)
+- **Auth Required:** ✅ `ADMIN`, `USER`
+
+#### GET /prices/search
+
+- **Description:** Search price data using state name
+- **Query Params:**
+  - `query` (string)
+  - `page` (number)
+- **Auth Required:** ✅ `ADMIN`, `USER`
+
+#### GET /prices/current
+
+- **Description:** Fetch most recent price data
+- **Query Params (Optional):**
+  - `region` (string)
+  - `state` (string)
+- **Returns:** Latest record for matching state or grouped data
+- **Auth Required:** ✅ `ADMIN`, `USER`
+
+### Insights & History
+
+#### GET /prices/history
+
+- **Description:** Returns historical price data before a target date
+- **Query Params:**
+  - `period` (required, date)
+  - `product` (required, enum)
+  - `state` (optional)
+  - `duration` (optional, string representing number)
+- **Response:** Sorted history with price change
+- **Auth Required:** ✅ `ADMIN`, `USER`
+
+#### GET /prices/weekly
+
+- **Description:** Returns weekly price report for a product and state
+- **Query Params:**
+  - `product` (required)
+  - `state` (required)
+  - `week` (required, number)
+  - `year` (required, number)
+- **Response:** Array of daily prices with summary stats
+- **Auth Required:** ✅ `ADMIN`, `USER`
+
+#### GET /prices/product/performance
+
+- **Description:** Tracks change and percentage change of a product's price
+- **Query Params:**
+  - `period` (required)
+  - `duration` (required)
+  - `state` (required)
+  - `product` (optional)
+- **Returns:** Aggregated price movement
+- **Auth Required:** ✅ `ADMIN`, `USER`
+
+## Swagger API Docs
+
+The full API documentation is auto-generated and available at:
+
+```
+http://localhost:4000/docs
+```
+
+It includes:
+
+- All routes grouped by tags (`Users`, `Prices`)
+- Input parameters, body schemas, and example values
+- Global "Authorize" support for JWT Bearer tokens
+
+To enable access:
+
+1. Click **Authorize** at the top right of Swagger UI
+2. Paste your JWT token
+3. Interact with protected endpoints
+
+## Response Examples
+
+Here's a sample of a weekly report payload:
+
+```json
+{
+  "state": "Abia",
+  "product": "pms",
+  "history": [
+    { "period": "2024-12-08", "price": 1060.27 },
+    { "period": "2024-12-07", "price": 1055.13 }
+  ],
+  "latest": 1060.27,
+  "previous": 1055.13,
+  "change": 5.14,
+  "percentageChange": 0.0049
+}
+```
+
 ```http
 Authorization: Bearer <your-token>
+
+
+
+```
