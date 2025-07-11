@@ -1,6 +1,6 @@
 import { startOfWeek, addDays } from 'date-fns';
 
-export const getWeekRange = (week: number, year: number): Date[] => {
+export const getWeekDates = (week: number, year: number): Date[] => {
   const jan1 = new Date(year, 0, 1);
   const offsetDays = (week - 1) * 7;
   const startMonday = startOfWeek(addDays(jan1, offsetDays), {

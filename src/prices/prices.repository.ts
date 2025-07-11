@@ -3,6 +3,7 @@ import { FilterQuery, Model } from 'mongoose';
 import { ProductType } from 'src/common/config/constants';
 import { AbstractRepository } from 'src/common/schemas/abstract.repository';
 import { Price } from 'src/common/schemas/prices.schema';
+import { getWeekDates } from 'src/utils/helper.utils';
 
 export class PricesRepository extends AbstractRepository<Price> {
   constructor(@InjectModel(Price.name) priceModel: Model<Price>) {
@@ -229,5 +230,71 @@ export class PricesRepository extends AbstractRepository<Price> {
       results.push(...document);
     }
     return results;
+  }
+
+  async getWeeklyProductHistory(
+    product: ProductType,
+    state: string,
+    week: number,
+    year: number,
+  ): Promise<{
+    state: string;
+    product: ProductType;
+    history: { period: Date; price: number }[];
+    latest: number;
+    previous: number;
+    change: number;
+    percentageChange: number;
+  }> {
+    const allowedProducts: ProductType[] = ['pmg', 'ago', 'dpk', 'lpg'];
+    if (!allowedProducts.includes(product)) {
+      throw new Error(
+        `Invalid product "${product}". Must be one of ${allowedProducts.join(', ')}`,
+      );
+    }
+    const weekDates = getWeekDates(week, year);
+    const startDate = weekDates[0];
+    const endDate = new Date(weekDates[6]);
+    endDate.setHours(23, 59, 59, 999);
+
+    const matchFilter = {
+      state: { $regex: new RegExp(`^${state.trim()}$`, 'i') },
+      period: { $gte: startDate, $lte: endDate },
+    };
+
+    const document = await this.model.aggregate([
+      { $match: matchFilter },
+      { $sort: { period: -1 } },
+      {
+        $project: {
+          period: 1,
+          price: `$${product}`,
+          state: 1,
+          product: { $literal: product },
+        },
+      },
+    ]);
+
+    const history = document.map((doc) => ({
+      period: doc.period,
+      price: doc.price,
+    }));
+
+    const latest = history[0]?.price ?? 0;
+    const previous = history[6]?.price ?? 0;
+
+    const change = +(latest - previous) / 100;
+    const percentageChange =
+      previous === 0 ? 0 : +((latest - previous) / previous / 100).toFixed(4);
+
+    return {
+      state,
+      product,
+      history,
+      latest,
+      previous,
+      change: +change.toFixed(2),
+      percentageChange,
+    };
   }
 }
