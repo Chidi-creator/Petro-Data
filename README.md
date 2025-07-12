@@ -36,6 +36,72 @@ Routes requiring protection use:
 
 JWT tokens are passed in requests via:
 
+```http
+Authorization: Bearer <your-token>
+
+
+
+```
+## 🧰 Installation & Setup
+
+Follow the steps below to set up and run the **Petro Data API** locally.
+
+---
+
+### ✅ Prerequisites
+
+- [Node.js](https://nodejs.org/) ≥ 18
+- A MongoDB instance (local or cloud, e.g. [MongoDB Atlas](https://www.mongodb.com/cloud/atlas))
+- Git installed
+
+---
+
+### 📦 1. Clone the Repository
+
+```bash
+git clone https://github.com/Chidi-creator/Petro-Data.git
+cd petro-data
+```
+
+### 📁 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 🔐 3. Create Environment Variables
+
+Create a `.env` file in the root directory and define these keys:
+
+```env
+MONGO_URI = mongodb+srv://tyler_igwe:CHinyere12*@cluster0.es3xjb8.mongodb.net/PetroData?retryWrites=true&w=majority
+PORT=4000
+JWT_SECRET=chidiebereigwechidiebere
+USER_JWT_EXPIRATION=3600000
+```
+
+*💡 You can update `PORT` to match your preferred server port.*
+
+### 🛠️ 4. Build the Project
+
+```bash
+npm run build
+```
+
+This compiles the TypeScript code into JavaScript using `dist/`.
+
+### 🚀 5. Start the API Server
+
+```bash
+npm run start:prod
+```
+
+The server will now run at:
+
+```
+http://localhost:4000
+```
+
 # API Documentation
 
 ## Available Endpoints
@@ -205,9 +271,3 @@ Returns paginated fuel price records filtered by a query string (typically a sta
 ]
 
 
-```http
-Authorization: Bearer <your-token>
-
-
-
-```
