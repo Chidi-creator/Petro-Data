@@ -49,7 +49,8 @@ jobs:
                     git pull origin main
                     sudo npm install
                     sudo npm run build
-                    pm2 restart main || pm2 start dist/main --name main
+                    sudo fuser -k 3000/tcp || true
+                    pm2 restart main || pm2 start dist/main.js --name main
                     pm2 save
 
 
