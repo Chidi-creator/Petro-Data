@@ -25,6 +25,33 @@ jobs:
           - name: Build the project
             run: npm run build
 
+    deploy:
+        runs-on: ubuntu-latest
+        needs: build # only runs if build job succeeds
+
+        steps:
+          - name: Deploy to EC2 via Bastion
+            uses: appleboy/ssh-action@v1.0.3
+            with:
+                # Bastion (jump host) settings
+                proxy_host: ${{ secrets.BASTION_HOST }}
+                proxy_username: ${{ secrets.BASTION_USER }}
+                proxy_key: ${{ secrets.SSH_KEY }}
+
+                # Private EC2 instance (app server) settings
+                host: ${{ secrets.EC2_HOST }}
+                username: ${{ secrets.EC2_USER }}
+                key: ${{ secrets.SSH_KEY }}
+
+                # Commands to run on the app server
+                script: |
+                    cd /home/ubuntu/Petro-Data
+                    git pull origin main
+                    npm ci
+                    npm run build
+                    pm2 restart main || pm2 start dist/main --name main
+                    pm2 save
+
 
 
         
