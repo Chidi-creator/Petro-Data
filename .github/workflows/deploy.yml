@@ -1,0 +1,31 @@
+name: CI/CD pipeline
+
+on:
+    push:
+        branches:
+            - main # run the workflow on push to main branch
+
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps: 
+          - name: Checkout code
+            uses: actions/checkout@v5
+
+          - name: Set Up node
+            uses: actions/setup-node@v5
+            with:
+                node-version: '20' # specify the node version you want to use
+
+          - name: Install dependencies
+            run: npm install
+
+          - name: Build the project
+            run: npm run build
+
+
+
+        
+            
