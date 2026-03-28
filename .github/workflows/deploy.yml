@@ -47,8 +47,8 @@ jobs:
                 script: |
                     cd /home/ubuntu/Petro-Data
                     git pull origin main
-                    npm ci
-                    npm run build
+                    sudo npm install
+                    sudo npm run build
                     pm2 restart main || pm2 start dist/main --name main
                     pm2 save
 
